@@ -1,5 +1,6 @@
 package com.library.management.service;
 
+import com.library.management.exception.LibraryException;
 import com.library.management.model.Book;
 import com.library.management.model.BorrowRecord;
 import com.library.management.model.User;
@@ -28,15 +29,15 @@ public class BorrowService {
     public BorrowRecord borrowBook(long bookId , String username){
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()->
-                        new RuntimeException("Book not found with id: " + bookId));
+                        new LibraryException("Book not found with id: " + bookId , 404));
 
-        if(!book.isAvailable()){
-            throw new RuntimeException("Book is already borrowed");
+        if(!book.getAvailable()){
+            throw new LibraryException("Book is already borrowed" , 400);
         }
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()->
-                        new RuntimeException("User not found!"));
+                        new LibraryException("User not found!" , 404));
 
         book.setAvailable(false);
 
@@ -57,7 +58,7 @@ public class BorrowService {
     public BorrowRecord returnBook(Long bookId){
        BorrowRecord record = borrowRepository.findByBookIdAndReturnDateIsNull(bookId)
                .orElseThrow(()->
-                       new RuntimeException("No active borrow record found!"));
+                       new LibraryException("No active borrow record found!",404));
 
        Book book = record.getBook();
        book.setAvailable(true);
@@ -67,11 +68,12 @@ public class BorrowService {
        return borrowRepository.save(record);
     }
 
-    public List<BorrowRecord> getMyBorrowedBooks(String username){
-         User user = userRepository.findByUsername(username)
-                 .orElseThrow(()-> new RuntimeException("Username not found in the db"));
+    public List<BorrowRecord> getMyBorrowedBooks(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new LibraryException("Username not found in the db", 404));
 
-         return borrowRepository.findByBookId(user.getId());
+        return borrowRepository.findByUserId(user.getId()); // ✅ fixed!
     }
 
 

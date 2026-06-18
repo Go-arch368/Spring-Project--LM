@@ -1,18 +1,18 @@
 package com.library.management.model;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.library.management.model.Author;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="books")
+@Table(name = "books")
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,8 +23,10 @@ public class Book {
     private String genre;
 
     @Column(nullable = false)
-    private boolean available = true;
+    private Boolean available = true;
+
+    @JsonBackReference  // ✅ This is the child side - stops infinite loop
     @ManyToOne
-    @JoinColumn(name="author_id")
-    private Author author;//many books belong to one author.
+    @JoinColumn(name = "author_id")
+    private Author author;
 }

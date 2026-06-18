@@ -1,6 +1,7 @@
 package com.library.management.service;
 
 
+import com.library.management.exception.LibraryException;
 import com.library.management.model.User;
 import com.library.management.repository.UserRepository;
 import com.library.management.security.JwtService;
@@ -27,11 +28,11 @@ public class AuthService {
 
     public String register(User user){
         if(userRepository.existsByUsername(user.getUsername())){
-            throw new RuntimeException("Username already exists!");
+            throw new LibraryException("Username already exists!", 409);
         }
 
         if(userRepository.existsByEmail(user.getEmail())){
-            throw new RuntimeException("Email alreaady exists.");
+            throw new LibraryException("Email alreaady exists.",409);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

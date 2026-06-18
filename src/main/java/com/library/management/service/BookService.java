@@ -1,6 +1,7 @@
 package com.library.management.service;
 
 
+import com.library.management.exception.LibraryException;
 import com.library.management.model.Author;
 import com.library.management.model.Book;
 import com.library.management.repository.AuthorRepository;
@@ -25,13 +26,13 @@ public class BookService {
     public Book getBookById(Long id){
         return bookRepository.findById(id)
                 .orElseThrow(()->
-                        new RuntimeException("Book not found with id: "+ id));
+                        new LibraryException("Book not found with id: "+ id , 404));
     }
 
     public Book addBook(Long authorId,Book book){
         Author author = authorRepository.findById(authorId)
                 .orElseThrow(()->
-                        new RuntimeException("Author not found with id: "+ authorId));
+                        new LibraryException("Author not found with id: "+ authorId , 404));
         book.setAuthor(author);
         book.setAvailable(true);
         return bookRepository.save(book);

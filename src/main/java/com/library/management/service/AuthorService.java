@@ -1,4 +1,5 @@
 package com.library.management.service;
+import com.library.management.exception.LibraryException;
 import com.library.management.model.Author;
 import com.library.management.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,13 @@ public class AuthorService {
 
     public Author getAuthorById(Long id){
         return authorRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Author not found with id "+id));
+                .orElseThrow(() ->
+                        new LibraryException("Author not found with id: " + id, 404));
     }
 
     public Author addAuthor(Author author){
         if(authorRepository.existsByName(author.getName())){
-            throw new RuntimeException("Author already exists!");
+            throw new LibraryException("Author already exists!", 409);
         }
         return authorRepository.save(author);
     }
@@ -39,7 +41,7 @@ public class AuthorService {
 
     public void deleteAuthor(Long id){
         if(!authorRepository.existsById(id)){
-            throw new RuntimeException("Author not found with id : "+id);
+            throw new LibraryException("Author not found with id "+ id, 404);
         }
         authorRepository.deleteById(id);
     }
